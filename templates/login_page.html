@@ -13,6 +13,8 @@
     .btn-primary { background:#111827; color:white; }
     .btn-outline { background:white; border:1px solid #d1d5db; }
     .btn-google { background:#db4437; color:white; }
+    .btn-kakao { background:#FEE500; color:#3C1E1E; }
+    .btn-naver { background:#03C75A; color:white; } /* ✅ 네이버 스타일 추가 */
     .muted { color:#6b7280; font-size:13px; margin-top:10px; }
     .ok { color:#065f46; }
     .err { color:#b91c1c; }
@@ -25,7 +27,6 @@
   <p class="muted">프로토타입 사용자와 비교하여 로그인하고, 성공 시 JWT를 발급합니다.</p>
 
   <div class="card">
-    <!-- 기존 프로토타입 로그인 -->
     <form id="loginForm">
       <label for="email">이메일</label>
       <input id="email" name="email" type="email" placeholder="test@example.com" required />
@@ -36,10 +37,9 @@
       <button class="btn-primary" type="submit">프로토타입 로그인</button>
     </form>
 
-    <!-- ✅ 구글 로그인 버튼 추가 -->
     <button id="googleLogin" class="btn-google">Google 계정으로 로그인</button>
-
-    <button id="callProfile" class="btn-outline" style="margin-top:8px;">/profile 호출(토큰 필요)</button>
+    <button id="kakaoLogin" class="btn-kakao">Kakao 계정으로 로그인</button>
+    <button id="naverLogin" class="btn-naver">Naver 계정으로 로그인</button> <button id="callProfile" class="btn-outline" style="margin-top:8px;">/profile 호출(토큰 필요)</button>
 
     <div id="msg" class="muted" style="min-height: 20px;"></div>
 
@@ -57,6 +57,8 @@
     const tokenBox = document.getElementById('tokenBox');
     const callProfileBtn = document.getElementById('callProfile');
     const googleLoginBtn = document.getElementById('googleLogin');
+    const kakaoLoginBtn  = document.getElementById('kakaoLogin');
+    const naverLoginBtn = document.getElementById('naverLogin'); // ✅ 네이버 버튼 변수 추가
 
     function setMsg(text, ok=false) {
       msg.textContent = text;
@@ -102,6 +104,16 @@
     // 구글 로그인 버튼 → 서버로 redirect
     googleLoginBtn.addEventListener('click', () => {
       window.location.href = '/auth/google/login';
+    });
+
+    // 카카오 로그인 버튼 → 서버로 redirect
+    kakaoLoginBtn.addEventListener('click', () => {
+      window.location.href = '/auth/kakao/login';
+    });
+
+    // ✅ 네이버 로그인 버튼 이벤트 리스너 추가
+    naverLoginBtn.addEventListener('click', () => {
+        window.location.href = '/auth/naver/login';
     });
 
     // 프로필 호출

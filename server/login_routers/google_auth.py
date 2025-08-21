@@ -1,13 +1,11 @@
-from flask import Blueprint, redirect, request, jsonify, url_for
+from flask import Blueprint, redirect, request, jsonify
 from flask_jwt_extended import create_access_token
-from dotenv import load_dotenv
 import os
 import requests
 
 
-class GoogleAuth:
+class GoogleAuth():
     def __init__(self):
-        load_dotenv()
         self.blueprint = Blueprint("google_auth", __name__)
 
         self.client_id = os.getenv("GOOGLE_CLIENT_ID")
@@ -19,7 +17,7 @@ class GoogleAuth:
 
     def login(self):
         google_auth_url = (
-            "https://accounts.google.com/o/oauth2/v2/auth"
+            "https://accounts.google.com/o/oauth2/v2/auth" # 구글 계정 로그인 url
             f"?client_id={self.client_id}"
             f"&redirect_uri={self.redirect_uri}"
             f"&response_type=code"
@@ -43,6 +41,7 @@ class GoogleAuth:
             "grant_type": "authorization_code",
         }
         token_res = requests.post(token_url, data=data).json()
+        
         id_token = token_res.get("id_token")
         access_token = token_res.get("access_token")
 

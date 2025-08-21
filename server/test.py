@@ -11,7 +11,10 @@ from datetime import timedelta
 import os
 
 from login_routers.google_auth import GoogleAuth
+from login_routers.kakao_auth import KakaoAuth
+from login_routers.naver_auth import NaverAuth
 
+# csrf 사이트 확인
 
 class Server:
     def __init__(self):
@@ -44,6 +47,12 @@ class Server:
         )
         google_auth = GoogleAuth()
         self.app.register_blueprint(google_auth.blueprint)
+
+        kakao_auth = KakaoAuth()
+        self.app.register_blueprint(kakao_auth.blueprint)
+
+        naver_auth = NaverAuth()
+        self.app.register_blueprint(naver_auth.blueprint)
 
     def login_page(self):
         return render_template("login_page.html")
