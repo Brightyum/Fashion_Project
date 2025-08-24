@@ -1,5 +1,6 @@
 import sys
 import os
+from flask_jwt_extended import decode_token
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 # sys.path에 프로젝트 루트 폴더가 없으면 추가합니다.
@@ -43,10 +44,19 @@ class Server:
         self.app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1)
 
         self.jwt = JWTManager(self.app)
+        # CORS(
+        #     self.app,
+        #     supports_credentials=True,
+        #     resources={r"*": {"origins": os.getenv("CORS_ALLOW_ORIGINS")}},
+        # )
+
+        #개발에서는 HTTP라서 secure=True 쿠키가 전송되지 않음
+        #로컬에서만 secure=False로 두고 배포 시 다시 True
+        # CORS: React 개발 서버 허용
         CORS(
             self.app,
             supports_credentials=True,
-            resources={r"*": {"origins": os.getenv("CORS_ALLOW_ORIGINS")}},
+            resources={r"*": {"origins": "http://localhost:5173"}},
         )
 
         self.token_manager = TokenManager()
@@ -118,32 +128,74 @@ class Server:
         access_token = create_access_token(identity=identity)
         refresh_token = create_refresh_token(identity=identity)
 
-        if self.token_manager.save_refresh_token(user["user_id"], refresh_token):
-            return jsonify({"ok":False, "error": "토큰 저장 실패"}), 500
+        # if self.token_manager.save_refresh_token(user["user_id"], refresh_token):
+        #     return jsonify({"ok":False, "error": "토큰 저장 실패"}), 500
         
-        return jsonify({"ok": True, "access_token": access_token, "refresh_token": refresh_token, "user": identity}), 200
+        # return jsonify({"ok": True, "access_token": access_token, "refresh_token": refresh_token, "user": identity}), 200
 
-    def refresh_token(self):
-        token = request.headers.get("Authorization")
-        if not token or not token.startswith("Bearer "):
-            return jsonify({"msg": "토큰이 누락되었습니다."}), 401
+        # DB 저장 실패 시 True/False인지 구현에 따라 다를 수 있음 (여기선 False가 정상이라고 가정)
+        if self.token_manager.save_refresh_token(user["user_id"], refresh_token):
+            return jsonify({"ok": False, "error": "토큰 저장 실패"}), 500
+
+        body = {"ok": True, "access_token": access_token, "user": identity}
+        resp = make_response(jsonify(body), 200)
+
+        # 개발환경(HTTP)에서는 secure=False
+        resp.set_cookie(
+                "refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=False,        # <---- 로컬에서 False
+                samesite="Strict"
+            )
+        return resp
+
+    # def refresh_token(self):
+    #     token = request.headers.get("Authorization")
+    #     if not token or not token.startswith("Bearer "):
+    #         return jsonify({"msg": "토큰이 누락되었습니다."}), 401
         
-        refresh_token = token.split(" ")[1]
+    #     refresh_token = token.split(" ")[1]
+
+    #     try:
+    #         # 토큰 유효성 검사
+    #         verify_jwt_in_request(refresh_token)
+    #         # 토큰에서 사용자 정보 추출
+    #         identity = get_jwt_identity()
+
+    #         if not self.token_manager.verify_refresh_token(identity["user_id"], refresh_token):
+    #             return jsonify({"msg": "유효하지 않은 토큰이므로, 다시 로그인하세요."}), 401
+            
+    #         new_access_token = create_access_token(identity=identity)
+    #         return jsonify({"ok": True, "access_token": new_access_token}), 200
+    #     except Exception as e:
+    #         return jsonify({"msg": "유효하지 않은 토큰이므로, 다시 로그인하세요."}), 401
+    
+    
+    def refresh_token(self):
+        # 1) 쿠키에서 리프레시 토큰 꺼내기
+        refresh_token = request.cookies.get("refresh_token")
+        if not refresh_token:
+            return jsonify({"ok": False, "msg": "리프레시 토큰 없음"}), 401
 
         try:
-            # 토큰 유효성 검사
-            verify_jwt_in_request(refresh_token)
-            # 토큰에서 사용자 정보 추출
-            identity = get_jwt_identity()
+            # 2) 토큰 디코딩(유효성/서명/만료 검증 포함)
+            decoded = decode_token(refresh_token)
+            identity = decoded["sub"]  # create_*_token(identity=...)에 넣었던 객체
 
-            if not self.token_manager.verify_refresh_token(identity["user_id"], refresh_token):
-                return jsonify({"msg": "유효하지 않은 토큰이므로, 다시 로그인하세요."}), 401
-            
-            new_access_token = create_access_token(identity=identity)
-            return jsonify({"ok": True, "access_token": new_access_token}), 200
-        except Exception as e:
-            return jsonify({"msg": "유효하지 않은 토큰이므로, 다시 로그인하세요."}), 401
-    
+            # 3) DB 보관 토큰과 대조
+            uid = identity.get("user_id") or identity.get("userId")
+            if not uid or not self.token_manager.verify_refresh_token(uid, refresh_token):
+                return jsonify({"ok": False, "msg": "유효하지 않은 토큰, 다시 로그인 필요"}), 401
+
+            # 4) 새 access 토큰 발급
+            new_access = create_access_token(identity=identity)
+            return jsonify({"ok": True, "access_token": new_access}), 200
+
+        except Exception:
+            return jsonify({"ok": False, "msg": "리프레시 토큰 검증 실패"}), 401
+
+
     def register_user(self):
         form_data = request.form.to_dict()
 
@@ -174,7 +226,7 @@ class Server:
             'refresh_token',
             value=refresh_token,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite='Strict'
         )
         return response
