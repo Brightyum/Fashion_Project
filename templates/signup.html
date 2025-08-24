@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        }
+        input:disabled {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 m-4">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">회원가입</h1>
+            <p id="page-description" class="text-gray-500 mb-8">서비스 이용을 위해 정보를 입력해주세요.</p>
+        </div>
+
+        <!-- 소셜 로그인 정보 표시 영역 -->
+        <div id="social-info" class="hidden mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+            <p class="text-sm text-blue-700">
+                <span id="provider-name" class="font-bold"></span> 계정으로 간편가입을 진행합니다.
+            </p>
+        </div>
+
+        <form id="signup-form" action="/auth/register" method="POST">
+            <!-- 이메일 입력 -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+                <input type="email" id="email" name="email" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                       placeholder="your-email@example.com">
+            </div>
+
+            <!-- 이름 입력 -->
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                <input type="text" id="name" name="name" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                       placeholder="홍길동">
+            </div>
+            
+            <!-- 휴대폰 번호 입력 -->
+            <div class="mb-4">
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">휴대폰 번호</label>
+                <input type="tel" id="phone" name="phone" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                       placeholder="010-1234-5678">
+            </div>
+
+            <!-- 성별 선택 -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">성별</label>
+                <div class="flex items-center space-x-6">
+                    <label for="gender-male" class="flex items-center cursor-pointer">
+                        <input type="radio" id="gender-male" name="gender" value="male" required class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="ml-2 text-gray-800">남성</span>
+                    </label>
+                    <label for="gender-female" class="flex items-center cursor-pointer">
+                        <input type="radio" id="gender-female" name="gender" value="female" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                        <span class="ml-2 text-gray-800">여성</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 비밀번호 입력 영역 (일반 가입 시에만 보임) -->
+            <div id="password-section">
+                <div class="mb-4">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">비밀번호</label>
+                    <input type="password" id="password" name="password"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                           placeholder="비밀번호를 입력하세요">
+                </div>
+                <div>
+                    <label for="password-confirm" class="block text-sm font-medium text-gray-700 mb-1">비밀번호 확인</label>
+                    <input type="password" id="password-confirm" name="password-confirm"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                           placeholder="비밀번호를 다시 입력하세요">
+                </div>
+            </div>
+
+            <!-- 가입 완료 버튼 -->
+            <div class="mt-8">
+                <button type="submit"
+                        class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
+                    가입 완료
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+                이미 계정이 있으신가요? 
+                <a href="/login" class="font-medium text-blue-600 hover:underline">로그인</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSocialLogin = urlParams.has('provider');
+
+            if (isSocialLogin) {
+                // --- 소셜 로그인 사용자 처리 ---
+                const provider = urlParams.get('provider');
+                const name = urlParams.get('name');
+                const email = urlParams.get('email');
+
+                const emailInput = document.getElementById('email');
+                const nameInput = document.getElementById('name');
+                
+                // 이메일과 이름 자동 채우기 및 비활성화
+                if (email) {
+                    emailInput.value = email;
+                    emailInput.disabled = true;
+                }
+                if (name) {
+                    nameInput.value = name;
+                    nameInput.disabled = true;
+                }
+
+                // 소셜 로그인 안내 문구 표시
+                document.getElementById('provider-name').textContent = provider;
+                document.getElementById('social-info').classList.remove('hidden');
+                document.getElementById('page-description').textContent = '서비스 이용을 위해 추가 정보를 입력해주세요.';
+
+                // 비밀번호 섹션 숨기기
+                document.getElementById('password-section').style.display = 'none';
+
+                // 폼 제출 시 비활성화된 필드 값도 전송하기 위한 hidden input 추가
+                const form = document.getElementById('signup-form');
+                if (email) {
+                    const hiddenEmail = document.createElement('input');
+                    hiddenEmail.type = 'hidden';
+                    hiddenEmail.name = 'email';
+                    hiddenEmail.value = email;
+                    form.appendChild(hiddenEmail);
+                }
+                if (name) {
+                    const hiddenName = document.createElement('input');
+                    hiddenName.type = 'hidden';
+                    hiddenName.name = 'name';
+                    hiddenName.value = name;
+                    form.appendChild(hiddenName);
+                }
+            } else {
+                // --- 일반 회원가입 사용자 처리 ---
+                // 비밀번호 필드를 필수로 만듦
+                document.getElementById('password').required = true;
+                document.getElementById('password-confirm').required = true;
+            }
+        };
+
+        // 폼 제출 시 유효성 검사
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            const isSocialLogin = new URLSearchParams(window.location.search).has('provider');
+            
+            // 일반 가입 시에만 비밀번호 확인
+            if (!isSocialLogin) {
+                const password = document.getElementById('password').value;
+                const passwordConfirm = document.getElementById('password-confirm').value;
+
+                if (password.length < 8) {
+                    alert('비밀번호는 8자 이상으로 설정해주세요.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if (password !== passwordConfirm) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    event.preventDefault();
+                    return;
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

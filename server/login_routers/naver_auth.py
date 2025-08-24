@@ -1,9 +1,11 @@
 from flask import Blueprint, redirect, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 import os
 import requests
 import urllib.parse
 
+from models.user_manager import UserManager
+from models.token_manager import TokenManager
 
 class NaverAuth():
     def __init__(self):
@@ -15,6 +17,8 @@ class NaverAuth():
 
         self.blueprint.add_url_rule("/auth/naver/login", view_func=self.login)
         self.blueprint.add_url_rule("/auth/naver/callback", view_func=self.callback)
+        self.user_manager = UserManager
+        self.token_manager = TokenManager
     
     def login(self):
         # 16바이트 길이의 예측 불가능한 랜던 데이터(hex함수는 16진수 문자열로 변환)
@@ -60,12 +64,34 @@ class NaverAuth():
         name = userinfo.get("response", {}).get("name")
         gender = userinfo.get("response", {}).get("gender")
         
-        identity = {
-            "provider": "naver",
-            "email": email,
-            "mobile": mobile,
-            "name": name,
-            "gender": gender
-        }
-        jwt_token = create_access_token(identity=identity)
-        return jsonify({"ok": True, "token": jwt_token, "user": identity})
+        checking_user = self.user_manager.get_user_by_email(email)
+        if checking_user:
+            print(f"기존 사용자 로그인: {email}")
+            identity = {
+                "userId": checking_user["userId"],
+                "email": checking_user["email"],
+                "name": checking_user["name"]
+            }
+            access_token = create_access_token(identity=identity)
+            refresh_token = create_refresh_token(identity=identity)
+            self.token_manager.save_refresh_token(identity["userId"], refresh_token)
+
+            return jsonify({
+                "ok": True, 
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "user": identity 
+            })
+        else:
+            print(f"신규 사용자, 회원가입: {email}")
+            identity = {
+                "provider": "naver",
+                "email": email,
+                "mobile": mobile,
+                "name": name,
+                "gender": gender
+            }
+
+            encoded_params = urllib.parse.urlencode(identity)
+            return redirect(f"/signup?{encoded_params}")
+        
