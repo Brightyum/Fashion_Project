@@ -90,11 +90,18 @@ export default function MainPage(){
           <div className="brand">
             <span aria-hidden className="brand-emoji">🧭</span>
             <span className="brand-name">이름아직못정함티비</span>
-            {weather?.location?.city && <span className="brand-city">· {weather.location.city}</span>}
+            {weather?.location?.city && (
+              <span className="brand-city">· {weather.location.city}</span>
+            )}
           </div>
-          <a className="nav-link" href="/login">로그인</a>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <a className="nav-link" href="/login">로그인</a>
+            <a className="nav-link" href="/signup">회원가입</a>
+          </div>
         </div>
       </header>
+
 
       {/* 본문 */}
       <main className="container grid">

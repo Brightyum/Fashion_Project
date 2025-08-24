@@ -1,0 +1,126 @@
+/* Login page scoped styles */
+.login-page {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  margin-top: 40px;
+  color: #111827;
+}
+
+.login-page .container {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.login-page .card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.login-page label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.login-page input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.login-page .btn {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  margin-top: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background-color 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* buttons */
+.login-page .btn-primary {
+  background: #111827;
+  color: #ffffff;
+}
+.login-page .btn-primary:hover {
+  background: #374151;
+}
+
+.login-page .btn-outline {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+.login-page .btn-outline:hover {
+  background-color: #f9fafb;
+}
+
+.login-page .btn-google {
+  background: #db4437;
+  color: #ffffff;
+}
+.login-page .btn-google:hover {
+  background: #c53727;
+}
+
+.login-page .btn-kakao {
+  background: #fee500;
+  color: #191919;
+}
+.login-page .btn-kakao:hover {
+  background: #f0d900;
+}
+
+.login-page .btn-naver {
+  background: #03c75a;
+  color: #ffffff;
+}
+.login-page .btn-naver:hover {
+  background: #02b350;
+}
+
+/* divider */
+.login-page .divider {
+  margin: 24px 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* text helpers */
+.login-page .muted {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* message colors (전역으로도 쓰일 수 있어 스코프 제외) */
+.ok {
+  color: #065f46;
+}
+.err {
+  color: #b91c1c;
+}
+
+/* code block */
+.login-page pre {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px;
+  overflow: auto;
+  font-size: 12px;
+}

@@ -1,16 +1,21 @@
-// React 앱의 진입점
-// index.html 안의 <div id="root"></div>에 MainPage 컴포넌트를 마운트
-
+// React 앱의 진입점 (main.jsx)
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-// 메인 페이지 컴포넌트 import
+// 페이지 컴포넌트 import
 import MainPage from "./pages/MainPage.jsx";
+import Login from "./pages/Login.jsx";
+import Signup from "./pages/Signup.jsx";
 
-// ReactDOM 18 버전 스타일의 렌더링 방식 사용
+const router = createBrowserRouter([
+  { path: "/", element: <MainPage /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
+]);
+
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* 메인 페이지를 root에 렌더링 */}
-    <MainPage />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
