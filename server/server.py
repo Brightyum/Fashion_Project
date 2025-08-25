@@ -69,7 +69,7 @@ class Server:
         self.app.add_url_rule(
             "/auth/login-func",
             endpoint="login_func",
-            view_func=Server.login_func,
+            view_func=self.login_func,
             methods=["POST"],
         )
         self.app.add_url_rule(

@@ -39,9 +39,10 @@ export default function Login() {
         setToken("");
       } else {
         localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("name", data.user.name);
         setToken(data.access_token);
         setMessage("로그인 성공! 토큰이 저장되었습니다.", true);
-        // window.location.href = "/";
+        window.location.href = "/";
       }
     } catch {
       setMessage("요청 중 오류가 발생했습니다.", false);

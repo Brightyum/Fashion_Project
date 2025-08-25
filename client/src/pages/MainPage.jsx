@@ -1,5 +1,6 @@
 // 메인 페이지 UI
 // 지금은 날씨 API가 없으므로 makeMockWeather()에서 더미 데이터를 생성해서 보여주고 있음. 날씨 api 연결되면 로직 수정 할 것
+//위치 권한 못하면 디폴트 부산 위치
 
 import React, { useEffect, useMemo, useState } from "react";
 import "./MainPage.css"; 
@@ -81,6 +82,21 @@ export default function MainPage(){
   // 요약 문구 생성
   const summary = useMemo(()=> weather ? buildSummary(weather) : "", [weather]);
 
+  const [userName, setUserName] = useState(null);
+
+   // 사용자 이름 가져오기
+  useEffect(() => {
+    const name = localStorage.getItem("name");
+    if (name) setUserName(name);
+  }, []);
+
+  // 로그아웃 핸들러
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_name");
+    setUserName(null);
+  };
+
   // 화면에 나타나는 UI
   return (
     <div className="page">
@@ -89,15 +105,24 @@ export default function MainPage(){
         <div className="container header-row">
           <div className="brand">
             <span aria-hidden className="brand-emoji">🧭</span>
-            <span className="brand-name">이름아직못정함티비</span>
+            <span className="brand-name">오늘 뭐입징?</span>
             {weather?.location?.city && (
               <span className="brand-city">· {weather.location.city}</span>
             )}
           </div>
 
           <div style={{ display: "flex", gap: "8px" }}>
-            <a className="nav-link" href="/login">로그인</a>
-            <a className="nav-link" href="/signup">회원가입</a>
+           {userName ? (
+              <>
+                <span className="nav-link">반갑습니다, {userName} 님</span>
+                <button className="nav-link" onClick={handleLogout}>로그아웃</button>
+              </>
+            ) : (
+              <>
+                <a className="nav-link" href="/login">로그인</a>
+                <a className="nav-link" href="/signup">회원가입</a>
+              </>
+            )}
           </div>
         </div>
       </header>

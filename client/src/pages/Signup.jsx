@@ -37,7 +37,7 @@ export default function Signup() {
 
     if (!isSocial) {
       if (form.password.length < 8) {
-        alert("비밀번호는 8자 이상으로 설정해주세요.");
+        alert("비밀번호는 12자 이상으로 설정해주세요.");
         return;
       }
       if (form.password !== form.passwordConfirm) {
