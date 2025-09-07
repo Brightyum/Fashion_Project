@@ -4,6 +4,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import "./MainPage.css"; 
+import { useNavigate } from "react-router-dom"; 
 
 // 날씨 상태별 아이콘 
 const ICON = { clear:"☀️", clouds:"☁️", rain:"🌧️", snow:"❄️", drizzle:"🌦️", thunder:"⛈️", mist:"🌫️" };
@@ -48,6 +49,12 @@ function fmtTime(iso){
 
 // 메인 페이지 요소
 export default function MainPage(){
+
+  const navigate = useNavigate();  
+  const handleGoRecommend = () => {
+  navigate("/recommend");       
+  };
+
   // 상태 정의
   const [coords, setCoords]   = useState(null);     // 위도/경도
   const [geoMsg, setGeoMsg]   = useState(null);     // 위치 권한 관련 메시지
@@ -176,7 +183,9 @@ export default function MainPage(){
                 <h3 className="card-title">오늘의 날씨를 바탕으로 코디 추천 받기</h3>
                 <p className="muted">보유 옷/선호 스타일을 반영한 적절한 옷차림을 제안합니다.</p>
               </div>
-              <a className="btn-primary" href="#">오늘 맞춤 코디 보러가기</a>
+              <button className="btn-primary" onClick={handleGoRecommend}>
+              오늘 맞춤 코디 보러가기
+              </button>
             </div>
           </section>
         </section>

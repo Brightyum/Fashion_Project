@@ -7,11 +7,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainPage from "./pages/MainPage.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
+import OutfitPage from "./pages/OutfitPage.jsx"; 
 
 const router = createBrowserRouter([
   { path: "/", element: <MainPage /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/recommend", element: <OutfitPage /> },
 ]);
 
 createRoot(document.getElementById("root")).render(
